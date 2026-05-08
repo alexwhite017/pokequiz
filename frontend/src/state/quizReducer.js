@@ -3,6 +3,8 @@ export const initialState = {
   round: null,
   sessionScore: 0,
   streak: 0,
+  nameLength: 0,
+  nameSoFar: "",
   hints: [],
   guess: "",
   wrongGuesses: [],
@@ -25,6 +27,7 @@ export function quizReducer(state, action) {
         ...state,
         status: "playing",
         round: action.payload,
+        nameSoFar: action.payload.nameSoFar,
       };
     case "HINT_REVEALED":
       return {
@@ -41,6 +44,7 @@ export function quizReducer(state, action) {
         guess: "",
         hints: [...state.hints, action.payload.hint],
         wrongGuesses: [...state.wrongGuesses, action.payload.guess],
+        nameSoFar: action.payload.nameSoFar,
       };
     case "ANSWER_SUBMITTED":
       return { ...state, status: "submitting" };

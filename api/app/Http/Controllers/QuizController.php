@@ -51,9 +51,9 @@ class QuizController extends Controller
         ]);
 
         return response()->json([
-            'round_id' => $round->id,
-            'sprite_url' => sprintf(self::SPRITE_URL_TEMPLATE, $pokemon->id),
-            'max_hints' => self::MAX_HINTS,
+            'round_id'    => $round->id,
+            'name_so_far' => $this->maskName($pokemon->name, []),
+            'max_hints'   => self::MAX_HINTS,
         ]);
     }
     public function revealHint(QuizRound $round): JsonResponse
@@ -92,6 +92,27 @@ class QuizController extends Controller
         // Wrong guess but hints remain → auto-reveal a hint and keep playing
         if (! $isCorrect && $round->hints_revealed < self::MAX_HINTS) {
             $round->increment('hints_revealed');
+
+            // Reveal a random unseen letter
+            $name = $round->pokemon->name;
+
+            // Only consider letter positions as candidates for reveal
+            $letterIndices = [];
+            foreach (str_split($name) as $i => $char) {
+                if (ctype_alpha($char)) {
+                    $letterIndices[] = $i;
+                }
+            }
+
+            $alreadyRevealed = $round->revealed_letter_indices;
+            $candidates = array_values(array_diff($letterIndices, $alreadyRevealed));
+
+            if (! empty($candidates)) {
+                $newIndex = $candidates[array_rand($candidates)];
+                $round->revealed_letter_indices = [...$alreadyRevealed, $newIndex];
+                $round->save();
+            }
+
             $round->refresh();
 
             return response()->json([
@@ -99,6 +120,7 @@ class QuizController extends Controller
                 'guess'          => $guess,
                 'hints_revealed' => $round->hints_revealed,
                 'hint'           => $this->buildHint($round->pokemon, $round->hints_revealed),
+                'name_so_far'    => $this->maskName($name, $round->revealed_letter_indices),
             ]);
         }
 
@@ -127,10 +149,25 @@ class QuizController extends Controller
     private function buildHint(Pokemon $pokemon, int $hintNumber): array
     {
         return match ($hintNumber) {
-            1 => ['kind' => 'type',       'value' => array_values(array_filter([$pokemon->primary_type, $pokemon->secondary_type]))],
-            2 => ['kind' => 'generation', 'value' => $pokemon->generation],
-            3 => ['kind' => 'stat_total', 'value' => $pokemon->stat_total],
-            4 => ['kind' => 'abilities',  'value' => $pokemon->abilities],
+            1 => ['kind' => 'stat_total', 'value' => $pokemon->stat_total],
+            2 => ['kind' => 'type',       'value' =>
+            array_values(array_filter([$pokemon->primary_type, $pokemon->secondary_type]))],
+            3 => ['kind' => 'generation', 'value' => $pokemon->generation],
+            4 => ['kind' => 'image',      'value' => sprintf(
+                self::SPRITE_URL_TEMPLATE,
+                $pokemon->id
+            )],
         };
+    }
+
+    private function maskName(string $name, array $revealed): string
+    {
+        $masked = '';
+        foreach (str_split($name) as $i => $char) {
+            $isLetter = ctype_alpha($char);
+            $shouldShow = !$isLetter || in_array($i, $revealed);
+            $masked .= $shouldShow ? $char : '_';
+        }
+        return $masked;
     }
 }

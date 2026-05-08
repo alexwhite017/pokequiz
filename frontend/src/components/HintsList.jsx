@@ -1,10 +1,10 @@
 import { TYPE_COLORS } from "../utils/typeColors";
 
 const HINT_LABELS = {
+  stat_total: "Base Stat Total",
   type: "Type",
   generation: "Generation",
-  stat_total: "Base Stat Total",
-  abilities: "Abilities",
+  image: "Silhouette",
 };
 
 export function HintsList({ hints }) {
@@ -34,7 +34,13 @@ function HintRow({ hint }) {
         {label}
       </span>
       <span>
-        {hint.kind === "type" ? (
+        {hint.kind === "image" ? (
+          <img
+            src={hint.value}
+            alt="Pokémon silhouette"
+            className="h-16 w-16 brightness-0 [image-rendering:pixelated]"
+          />
+        ) : hint.kind === "type" ? (
           <TypeBadges types={hint.value} />
         ) : Array.isArray(hint.value) ? (
           <span className="text-sm font-medium capitalize">

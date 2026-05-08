@@ -15,10 +15,12 @@ export function IdleView({ startRound }) {
         Identify the Pokémon. Wrong guesses reveal hints — score depends on how
         few you need.
       </p>
-      <GenerationPicker
-        selected={selectedGenerations}
-        onChange={setSelectedGenerations}
-      />
+      <div className="mb-6">
+        <GenerationPicker
+          selected={selectedGenerations}
+          onChange={setSelectedGenerations}
+        />
+      </div>
       <button
         onClick={startRound}
         disabled={!canStart}

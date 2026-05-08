@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Pokemon;
@@ -14,6 +16,11 @@ class PokemonSeeder extends Seeder
      */
     public function run(): void
     {
+
+        Schema::disableForeignKeyConstraints();
+        Pokemon::truncate();
+        Schema::enableForeignKeyConstraints();
+
         $maxId = 1025;
 
         for ($id = 1; $id <= $maxId; $id++) {
@@ -30,18 +37,17 @@ class PokemonSeeder extends Seeder
             $abilities = collect($data['abilities'])->pluck('ability.name')->all();
             $statTotal = collect($data['stats'])->sum('base_stat');
 
-            Pokemon::updateOrCreate(
-                ['name' => $data['name']],
-                [
-                    'primary_type'   => $types[0]['type']['name'],
-                    'secondary_type' => $types[1]['type']['name'] ?? null,
-                    'generation'     => $this->generationForId($id),
-                    'stat_total'     => $statTotal,
-                    'abilities'      => $abilities,
-                ]
-            );
+            Pokemon::create([
+                'name'           => $data['species']['name'],
+                'primary_type'   => $types[0]['type']['name'],
+                'secondary_type' => $types[1]['type']['name'] ?? null,
+                'generation'     => $this->generationForId($id),
+                'stat_total'     => $statTotal,
+                'abilities'      => $abilities,
+            ]);
 
-            $this->command->info("Seeded #{$id}: {$data['name']}");
+
+            $this->command->info("Seeded #{$id}: {$data['species']['name']}");
         }
     }
     private function generationForId(int $id): int

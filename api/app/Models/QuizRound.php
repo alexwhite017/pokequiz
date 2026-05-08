@@ -15,11 +15,13 @@ class QuizRound extends Model
         'is_correct',
         'score',
         'completed_at',
+        'revealed_letter_indices',
     ];
 
     protected $casts = [
         'is_correct'   => 'boolean',
         'completed_at' => 'datetime',
+        'revealed_letter_indices' => 'array',
     ];
 
     public function pokemon(): BelongsTo

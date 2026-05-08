@@ -20,7 +20,7 @@ export function GenerationPicker({ selected, onChange }) {
               key={gen}
               type="button"
               onClick={() => toggle(gen)}
-              className={`rounded-lg border py-1.5 text-xs font-medium transition ${
+              className={`rounded-lg border py-2 text-sm font-medium transition sm:py-1.5 sm:text-xs ${
                 isSelected
                   ? "border-accent bg-accent/15 text-accent"
                   : "border-border bg-card-elevated text-muted hover:text-fg"

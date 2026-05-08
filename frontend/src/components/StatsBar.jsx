@@ -1,7 +1,7 @@
 export function StatsBar({ streak, sessionScore }) {
   if (streak === 0 && sessionScore === 0) return null;
   return (
-    <div className="flex items-center justify-between border-b border-border px-5 py-3">
+    <div className="flex items-center justify-between border-b border-border px-4 py-2.5 sm:px-5 sm:py-3">
       <p className="text-sm text-muted">
         Streak: <span className="font-mono">{streak}</span>
       </p>
