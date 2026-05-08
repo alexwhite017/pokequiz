@@ -1,6 +1,8 @@
 export const initialState = {
   status: "idle",
   round: null,
+  sessionScore: 0,
+  streak: 0,
   hints: [],
   guess: "",
   wrongGuesses: [],
@@ -11,7 +13,12 @@ export const initialState = {
 export function quizReducer(state, action) {
   switch (action.type) {
     case "START_REQUESTED":
-      return { ...initialState, status: "loading" };
+      return {
+        ...initialState,
+        status: "loading",
+        sessionScore: state.sessionScore,
+        streak: state.streak,
+      };
 
     case "ROUND_STARTED":
       return {
@@ -42,6 +49,8 @@ export function quizReducer(state, action) {
         ...state,
         status: "revealed",
         result: action.payload,
+        sessionScore: state.sessionScore + action.payload.score,
+        streak: action.payload.correct ? state.streak + 1 : 0,
       };
     case "ERROR":
       return { ...state, status: "error", error: action.payload };
