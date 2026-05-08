@@ -1,6 +1,10 @@
 import { PokeballIcon } from "./PokeballIcon";
+import { useOutletContext } from "react-router-dom";
+import { GenerationPicker } from "./GenerationPicker";
 
 export function IdleView({ startRound }) {
+  const { selectedGenerations, setSelectedGenerations } = useOutletContext();
+  const canStart = selectedGenerations.length > 0;
   return (
     <div className="animate-fade-up py-6 text-center">
       <div className="mb-6 flex justify-center">
@@ -11,9 +15,15 @@ export function IdleView({ startRound }) {
         Identify the Pokémon. Wrong guesses reveal hints — score depends on how
         few you need.
       </p>
+      <GenerationPicker
+        selected={selectedGenerations}
+        onChange={setSelectedGenerations}
+      />
       <button
         onClick={startRound}
-        className="w-full rounded-full bg-accent px-8 py-3 font-semibold text-white transition hover:bg-accent-hover"
+        disabled={!canStart}
+        className="w-full rounded-full bg-accent px-8 py-3 font-semibold text-white          
+  transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
       >
         Start round
       </button>

@@ -14,15 +14,13 @@ class PokemonSeeder extends Seeder
      */
     public function run(): void
     {
-        Pokemon::truncate();
+        $maxId = 1025;
 
-        $lastGen1ID = 151;
-
-        for($id = 1; $id <= $lastGen1ID; $id++) {
+        for ($id = 1; $id <= $maxId; $id++) {
             $response = Http::get("https://pokeapi.co/api/v2/pokemon/{$id}");
 
-            if ($response->failed()){
-                $this->command->warn("Failed to fetch Pokemon #{$id}");
+            if ($response->failed()) {
+                $this->command->warn("Failed to fetch Pokémon #{$id}");
                 continue;
             }
 
@@ -30,19 +28,34 @@ class PokemonSeeder extends Seeder
 
             $types = collect($data['types'])->sortBy('slot')->values();
             $abilities = collect($data['abilities'])->pluck('ability.name')->all();
-
             $statTotal = collect($data['stats'])->sum('base_stat');
 
-            Pokemon::create([
-                'name' => $data['name'],
-                'primary_type' => $types[0]['type']['name'],
-                'secondary_type' => $types[1]['type']['name'] ?? null,
-                'generation' => 1,
-                'stat_total' => $statTotal,
-                'abilities' => $abilities,
-            ]);
+            Pokemon::updateOrCreate(
+                ['name' => $data['name']],
+                [
+                    'primary_type'   => $types[0]['type']['name'],
+                    'secondary_type' => $types[1]['type']['name'] ?? null,
+                    'generation'     => $this->generationForId($id),
+                    'stat_total'     => $statTotal,
+                    'abilities'      => $abilities,
+                ]
+            );
 
             $this->command->info("Seeded #{$id}: {$data['name']}");
         }
+    }
+    private function generationForId(int $id): int
+    {
+        return match (true) {
+            $id <= 151  => 1,
+            $id <= 251  => 2,
+            $id <= 386  => 3,
+            $id <= 493  => 4,
+            $id <= 649  => 5,
+            $id <= 721  => 6,
+            $id <= 809  => 7,
+            $id <= 905  => 8,
+            default     => 9,
+        };
     }
 }

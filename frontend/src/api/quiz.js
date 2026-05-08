@@ -23,7 +23,11 @@ async function request(path, options = {}) {
 }
 
 export const quizApi = {
-  startRound: () => request("/api/quiz/rounds", { method: "POST" }),
+  startRound: (generations = []) =>
+    request("/api/quiz/rounds", {
+      method: "POST",
+      body: JSON.stringify({ generations }),
+    }),
 
   revealHint: (roundId) =>
     request(`/api/quiz/rounds/${roundId}/hints`, { method: "POST" }),

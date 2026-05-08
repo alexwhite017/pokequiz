@@ -35,9 +35,16 @@ class QuizController extends Controller
         ]);
     }
 
-    public function start(): JsonResponse
+    public function start(Request $request): JsonResponse
     {
-        $pokemon = Pokemon::inRandomOrder()->firstOrFail();
+        $validated = $request->validate([
+            'generations' => 'array',
+            'generations.*' => 'integer|between:1,9',
+        ]);
+
+        $generations = $validated['generations'] ?? [];
+
+        $pokemon = Pokemon::query()->when($generations, fn($q) => $q->whereIn('generation', $generations))->inRandomOrder()->firstOrFail();
 
         $round = QuizRound::create([
             'pokemon_id' => $pokemon->id,

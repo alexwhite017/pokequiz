@@ -3,14 +3,20 @@ import { quizApi } from "./api/quiz";
 import { quizReducer, initialState } from "./state/quizReducer";
 import { Card } from "./components/Card";
 import { Outlet } from "react-router-dom";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 function App() {
   const [state, dispatch] = useReducer(quizReducer, initialState);
 
+  const [selectedGenerations, setSelectedGenerations] = useLocalStorage(
+    "pokemon-quiz:generations",
+    [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  );
+
   const startRound = async () => {
     dispatch({ type: "START_REQUESTED" });
     try {
-      const data = await quizApi.startRound();
+      const data = await quizApi.startRound(selectedGenerations);
       dispatch({
         type: "ROUND_STARTED",
         payload: {
@@ -50,7 +56,16 @@ function App() {
     <main className="flex min-h-screen items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
         <Card state={state}>
-          <Outlet context={{ state, dispatch, startRound, submitAnswer }} />
+          <Outlet
+            context={{
+              state,
+              dispatch,
+              startRound,
+              submitAnswer,
+              selectedGenerations,
+              setSelectedGenerations,
+            }}
+          />
         </Card>
       </div>
     </main>
