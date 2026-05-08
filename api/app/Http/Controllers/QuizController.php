@@ -12,6 +12,29 @@ class QuizController extends Controller
     private const MAX_HINTS = 4;
     private const SPRITE_URL_TEMPLATE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/%d.png';
 
+    public function index(Request $request): JsonResponse
+    {
+        $limit = min(max((int) $request->query('limit', 20), 1), 100);
+
+        $rounds = QuizRound::with('pokemon')
+            ->where('status', 'completed')
+            ->latest('completed_at')
+            ->limit($limit)
+            ->get();
+
+        return response()->json([
+            'rounds' => $rounds->map(fn($round) => [
+                'id' => $round->id,
+                'pokemon_name' => $round->pokemon->name,
+                'sprite_url' => sprintf(self::SPRITE_URL_TEMPLATE, $round->pokemon->id),
+                'hints_used' => $round->hints_revealed,
+                'score' => $round->score,
+                'correct' => $round->is_correct,
+                'completed_at' => $round->completed_at,
+            ]),
+        ]);
+    }
+
     public function start(): JsonResponse
     {
         $pokemon = Pokemon::inRandomOrder()->firstOrFail();

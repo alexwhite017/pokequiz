@@ -28,6 +28,8 @@ export const quizApi = {
   revealHint: (roundId) =>
     request(`/api/quiz/rounds/${roundId}/hints`, { method: "POST" }),
 
+  listRounds: (limit = 20) => request(`/api/quiz/rounds?limit=${limit}`),
+
   submitAnswer: (roundId, guess) =>
     request(`/api/quiz/rounds/${roundId}/answer`, {
       method: "POST",
