@@ -3,7 +3,7 @@ import { NavTabs } from "./NavTabs";
 
 export function Card({ state, onTitleClick, children }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl shadow-black/40 sm:rounded-3xl">
+    <div className="rounded-2xl border border-border bg-card shadow-2xl shadow-black/40 sm:rounded-3xl">
       <header className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5 sm:py-4">
         <button
           type="button"

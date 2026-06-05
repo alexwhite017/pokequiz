@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useEffect, useState } from "react";
 import { quizApi } from "./api/quiz";
 import { quizReducer, initialState } from "./state/quizReducer";
 import { Card } from "./components/Card";
@@ -8,6 +8,16 @@ import { useNavigate } from "react-router-dom";
 
 function App() {
   const [state, dispatch] = useReducer(quizReducer, initialState);
+
+  const [pokemonNames, setPokemonNames] = useState([]);
+
+  useEffect(() => {
+    quizApi.listPokemon().then((data)=> {
+      setPokemonNames(data.pokemon);
+    }).catch(() => setPokemonNames([]));
+
+    
+  }, []);
 
   const [selectedGenerations, setSelectedGenerations] = useLocalStorage(
     "pokemon-quiz:generations",
@@ -76,6 +86,7 @@ function App() {
               submitAnswer,
               selectedGenerations,
               setSelectedGenerations,
+              pokemonNames,
             }}
           />
         </Card>

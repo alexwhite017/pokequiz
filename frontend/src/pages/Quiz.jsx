@@ -6,7 +6,7 @@ import { RevealedView } from "../components/RevealedView";
 import { ErrorView } from "../components/ErrorView";
 
 export function Quiz() {
-  const { state, dispatch, startRound, submitAnswer } = useOutletContext();
+  const { state, dispatch, startRound, submitAnswer, pokemonNames } = useOutletContext();
 
   return (
     <>
@@ -18,6 +18,7 @@ export function Quiz() {
             state={state}
             dispatch={dispatch}
             submitAnswer={submitAnswer}
+            pokemonNames={pokemonNames}
           />
         )}
       {state.status === "revealed" && state.result && (

@@ -39,4 +39,6 @@ export const quizApi = {
       method: "POST",
       body: JSON.stringify({ guess }),
     }),
+
+    listPokemon: () => request("/api/quiz/pokemon"),
 };

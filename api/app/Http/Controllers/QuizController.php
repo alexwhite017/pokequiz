@@ -35,6 +35,11 @@ class QuizController extends Controller
         ]);
     }
 
+    public function pokemon(): JsonResponse {
+        $names = Pokemon::query()->orderBy('name')->pluck('name');
+        return response()->json(['pokemon' => $names]);
+    }
+
     public function start(Request $request): JsonResponse
     {
         $validated = $request->validate([
