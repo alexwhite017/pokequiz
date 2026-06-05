@@ -52,7 +52,7 @@ export function GuessForm({ state, dispatch, onSubmit, pokemonNames = [] }) {
           autoComplete="off"
           disabled={state.status === "submitting"}
           className="w-full rounded-full border border-border-strong bg-card-elevated px-4
-  py-2.5 text-sm transition placeholder:text-muted/60 focus:border-accent focus:outline-none
+  py-2.5 text-base transition placeholder:text-muted/60 focus:border-accent focus:outline-none sm:text-sm
   focus:ring-2 focus:ring-accent/20"
         />
         {showDropdown && (
